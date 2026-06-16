@@ -40,7 +40,11 @@ export default function ViagensPage() {
         </div>
       ) : trips.length === 0 ? (
         <div className="text-center py-16">
-          <div className="text-4xl mb-4">🛣️</div>
+          <div className="text-4xl mb-4">
+            <svg className="w-12 h-12 mx-auto text-[var(--muted)]" viewBox="0 0 24 24" fill="none">
+              <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6M9 19h6M9 19H7M15 19h2M15 19v-8a1 1 0 011-1h4a1 1 0 011 1v8M3 10l2-6h14l2 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
           <p className="text-[--muted]">Nenhuma viagem encontrada</p>
           <p className="text-sm text-[--muted] mt-1">Conecte seu BYD para sincronizar</p>
         </div>

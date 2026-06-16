@@ -1,11 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -18,12 +12,12 @@ export const metadata: Metadata = {
     "BYD", "crédito de carbono", "carro elétrico", "CO2", "sustentabilidade",
     "Dolphin", "Seal", "Yuan Plus", "Brasil",
   ],
-  authors: [{ name: "Carbon" }],
+  authors: [{ name: "Gold Carbon" }],
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    siteName: "Carbon",
+    siteName: "Gold Carbon",
     title: "Gold Carbon — Seu BYD vale dinheiro",
     description:
       "Transforme km rodados no seu BYD em dinheiro real com créditos de carbono.",
@@ -48,8 +42,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-[--background] text-[--foreground]">
+    <html lang="pt-BR" className="dark h-full antialiased">
+      <head>
+        <link
+          href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="min-h-full flex flex-col">
         {children}
       </body>
     </html>

@@ -1,54 +1,60 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
   --color-accent: var(--accent);
   --color-accent-glow: var(--accent-glow);
+  --color-accent-soft: var(--accent-soft);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-positive: var(--positive);
-  --color-neutral: var(--neutral);
-  --color-negative: var(--negative);
+  --color-muted: var(--ink-dim);
+  --color-positive: var(--accent);
+  --color-neutral: #F5A623;
+  --color-negative: #FF4757;
+  --font-display: 'Clash Display', system-ui, sans-serif;
+  --font-body: 'Satoshi', system-ui, sans-serif;
 }
 
 :root {
-  --background: #0A0F0A;
-  --foreground: #ECFDF1;
-  --accent: #00D68F;
-  --accent-glow: rgba(0, 214, 143, 0.15);
-  --surface: #111911;
-  --border: #1A2A1A;
-  --muted: #6B8F7B;
-  --positive: #00D68F;
-  --neutral: #F5A623;
-  --negative: #FF4757;
+  --bg: #060906;
+  --surface: #0d130d;
+  --surface-2: #111a11;
+  --ink: #eaf7ee;
+  --ink-dim: #7d9988;
+  --accent: #00d68f;
+  --accent-glow: rgba(0, 214, 143, 0.18);
+  --accent-soft: rgba(0, 214, 143, 0.08);
+  --border: rgba(255, 255, 255, 0.06);
+  --radius: 12px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, sans-serif;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-soft) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 80% at 20% 100%, rgba(0, 180, 120, 0.04) 0%, transparent 70%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
 
-/* Carbon gauge animation */
-@keyframes gauge-fill {
-  from { stroke-dashoffset: 283; }
-  to { stroke-dashoffset: var(--gauge-offset); }
-}
-
-.animate-gauge {
-  animation: gauge-fill 1.5s ease-out forwards;
-}
-
-/* Pulse glow for active sync */
 @keyframes pulse-glow {
   0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
   50% { box-shadow: 0 0 20px 4px var(--accent-glow); }
 }
 
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.8s ease-out forwards;
 }

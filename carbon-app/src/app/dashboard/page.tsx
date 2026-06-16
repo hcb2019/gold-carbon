@@ -95,7 +95,13 @@ export default function DashboardPage() {
 
       {/* Ranking teaser */}
       <div className="bg-[--surface] border border-[--border] rounded-2xl p-6">
-        <h3 className="font-semibold mb-2">🏆 Ranking Brasil</h3>
+        <h3 className="font-semibold mb-2">
+          <svg className="inline w-4 h-4 mr-1.5 -mt-0.5" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+          </svg>
+          Ranking Brasil
+        </h3>
         <p className="text-sm text-[--muted] mb-3">
           Veja como você se compara com outros motoristas BYD.
         </p>
