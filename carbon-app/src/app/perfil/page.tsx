@@ -104,7 +104,7 @@ export default function PerfilPage() {
 
       {/* App info */}
       <p className="text-center text-xs text-[--muted]">
-        Carbon v0.1.0 · Feito no Brasil 🇧🇷
+        Gold Carbon v0.1.0 · Feito no Brasil 🇧🇷
       </p>
     </AppShell>
   );

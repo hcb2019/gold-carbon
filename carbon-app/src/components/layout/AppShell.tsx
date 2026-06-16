@@ -24,7 +24,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-50 bg-[--background]/80 backdrop-blur border-b border-[--border]">
         <div className="max-w-lg mx-auto flex items-center justify-between px-4 h-14">
           <Link href="/dashboard" className="font-bold text-[--accent] text-lg">
-            Carbon
+            Gold Carbon
           </Link>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[--positive] animate-pulse" />

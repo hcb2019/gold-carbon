@@ -86,7 +86,7 @@ export default function CreditosPage() {
         <h4 className="text-sm font-medium mb-1">Como funciona</h4>
         <ul className="text-xs text-[--muted] space-y-1">
           <li>• Seu BYD gera créditos automaticamente a cada viagem</li>
-          <li>• A Carbon fica com 15% pela curadoria e venda dos créditos</li>
+          <li>• A Gold Carbon fica com 15% pela curadoria e venda dos créditos</li>
           <li>• Você recebe 85% via Pix em até 5 dias úteis</li>
           <li>• Créditos são verificados pela Carbonext</li>
         </ul>

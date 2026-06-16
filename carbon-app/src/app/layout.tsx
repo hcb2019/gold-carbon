@@ -9,8 +9,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Carbon — Seu BYD vale dinheiro",
-    template: "%s | Carbon",
+    default: "Gold Carbon — Seu BYD vale dinheiro",
+    template: "%s | Gold Carbon",
   },
   description:
     "Transforme os quilômetros rodados no seu BYD elétrico em créditos de carbono. Ganhe dinheiro real enquanto dirige. Conecte sua conta BYD e comece agora.",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "pt_BR",
     siteName: "Carbon",
-    title: "Carbon — Seu BYD vale dinheiro",
+    title: "Gold Carbon — Seu BYD vale dinheiro",
     description:
       "Transforme km rodados no seu BYD em dinheiro real com créditos de carbono.",
   },

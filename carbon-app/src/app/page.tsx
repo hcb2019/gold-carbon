@@ -6,7 +6,7 @@ export default function HomePage() {
       {/* Logo / Nome */}
       <div className="mb-8">
         <h1 className="text-5xl font-bold tracking-tight">
-          <span className="text-[--accent]">Carbon</span>
+          <span className="text-[--accent]">Gold Carbon</span>
         </h1>
         <p className="mt-3 text-[--muted] text-lg max-w-md">
           Seu BYD vale dinheiro. Descubra quanto.

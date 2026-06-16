@@ -20,7 +20,7 @@ database:
   url: ${SUPABASE_DATABASE_URL}
 
 app:
-  name: "Carbon"
+  name: "Gold Carbon"
   tagline: "Seu BYD vale dinheiro. Descubra quanto."
   currency: "BRL"
   locale: "pt-BR"

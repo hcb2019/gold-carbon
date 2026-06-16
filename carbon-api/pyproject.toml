@@ -1,7 +1,7 @@
 [project]
 name = "carbon-api"
 version = "0.1.0"
-description = "Carbon Credit Trader API — BYD vehicle carbon credit calculator"
+description = "Gold Carbon Credit Trader API — BYD vehicle carbon credit calculator"
 requires-python = ">=3.13"
 dependencies = [
     "asyncpg>=0.31.0",

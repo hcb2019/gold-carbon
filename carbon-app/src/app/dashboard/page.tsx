@@ -78,7 +78,7 @@ export default function DashboardPage() {
       {/* Stats cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div className="bg-[--surface] border border-[--border] rounded-xl p-4">
-          <p className="text-xs text-[--muted] mb-1">Comissão Carbon</p>
+          <p className="text-xs text-[--muted] mb-1">Comissão Gold Carbon</p>
           <p className="text-xl font-bold text-[--muted]">
             {summary ? formatBRL(summary.commission_brl) : "--"}
           </p>
