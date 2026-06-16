@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd carbon-app && npm install && npm run build",
-  "outputDirectory": "carbon-app/.next",
-  "installCommand": "cd carbon-app && npm install"
-}
