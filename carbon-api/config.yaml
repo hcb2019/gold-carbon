@@ -1,0 +1,26 @@
+byd:
+  api_timeout_seconds: 30
+  sync_interval_hours: 24
+  history_days_back: 90
+
+carbon:
+  emission_factors:
+    gasoline_kg_co2_per_liter: 2.3
+    brazil_grid_kg_co2_per_kwh: 0.062
+    gasoline_km_per_liter: 12.0
+  price_per_ton_brl: 45.0
+  commission_pct: 0.15
+
+partner:
+  provider: carbonext
+  min_payout_brl: 50.0
+  payout_business_days: 5
+
+database:
+  url: ${SUPABASE_DATABASE_URL}
+
+app:
+  name: "Carbon"
+  tagline: "Seu BYD vale dinheiro. Descubra quanto."
+  currency: "BRL"
+  locale: "pt-BR"

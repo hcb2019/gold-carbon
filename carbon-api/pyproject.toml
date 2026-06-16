@@ -1,0 +1,53 @@
+[project]
+name = "carbon-api"
+version = "0.1.0"
+description = "Carbon Credit Trader API — BYD vehicle carbon credit calculator"
+requires-python = ">=3.13"
+dependencies = [
+    "asyncpg>=0.31.0",
+    "fastapi>=0.137.1",
+    "httpx>=0.28.1",
+    "psycopg2-binary>=2.9.12",
+    "pybyd>=0.0.72",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.1",
+    "python-dotenv>=1.2.2",
+    "pyyaml>=6.0.3",
+    "sqlalchemy>=2.0.51",
+    "uvicorn>=0.49.0",
+]
+
+[dependency-groups]
+dev = [
+    {include-group = "lint"},
+    {include-group = "test"},
+    "httpx>=0.28.1",
+    "pytest>=9.1.0",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.17",
+    "ty>=0.0.49",
+]
+lint = ["ruff", "ty"]
+test = ["pytest", "pytest-cov", "pytest-asyncio", "httpx"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+ignore = []
+
+[tool.pytest.ini_options]
+addopts = ["--cov=src/core", "-v"]
+testpaths = ["tests"]
+
+[tool.ty.terminal]
+error-on-warning = true
+
+[tool.ty.environment]
+python-version = "3.13"
+
+[tool.uv]
+package = false
