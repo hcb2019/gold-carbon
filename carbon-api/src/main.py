@@ -9,11 +9,15 @@ from src.core.router import router as core_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup: init database tables
-    from src.core.db import init_db
-    await init_db()
+    # Startup: verify Supabase connectivity
+    from src.core.db.database import get_db
+    try:
+        db = get_db()
+        db.table("users").select("count", count="exact").execute()
+        print(f"✅ Supabase conectado — {config.app.name} pronto")
+    except Exception as e:
+        print(f"⚠️  Supabase warning: {e}")
     yield
-    # Shutdown: clean connections
 
 
 app = FastAPI(
@@ -28,6 +32,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://*.vercel.app",
+        "https://*.trycloudflare.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],

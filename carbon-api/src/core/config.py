@@ -1,6 +1,9 @@
 import os
 import yaml
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
+
+load_dotenv()
 
 
 class BYDConfig(BaseSettings):
@@ -28,14 +31,10 @@ class PartnerConfig(BaseSettings):
 
 
 class AppConfig(BaseSettings):
-    name: str = "Carbon"
+    name: str = "Gold Carbon"
     tagline: str = "Seu BYD vale dinheiro. Descubra quanto."
     currency: str = "BRL"
     locale: str = "pt-BR"
-
-
-class DatabaseConfig(BaseSettings):
-    url: str = ""
 
 
 class Config(BaseSettings):
@@ -43,21 +42,27 @@ class Config(BaseSettings):
     carbon: CarbonConfig = CarbonConfig()
     partner: PartnerConfig = PartnerConfig()
     app: AppConfig = AppConfig()
-    database: DatabaseConfig = DatabaseConfig()
+
+    # Supabase
+    supabase_url: str = ""
+    supabase_anon_key: str = ""
+    supabase_service_role_key: str = ""
 
     @classmethod
     def load(cls, path: str = "config.yaml") -> "Config":
         with open(path) as f:
             data = yaml.safe_load(f)
-        db_url = data.get("database", {}).get("url", "")
-        if db_url.startswith("${") and db_url.endswith("}"):
-            env_var = db_url[2:-1]
-            data["database"]["url"] = os.getenv(env_var, "")
-        return cls(**data)
-
-    @property
-    def database_url(self) -> str:
-        return self.database.url
+        cfg = cls(
+            byd=BYDConfig(**data.get("byd", {})),
+            carbon=CarbonConfig(**data.get("carbon", {})),
+            partner=PartnerConfig(**data.get("partner", {})),
+            app=AppConfig(**data.get("app", {})),
+        )
+        # Load Supabase from env
+        cfg.supabase_url = os.getenv("SUPABASE_URL", "")
+        cfg.supabase_anon_key = os.getenv("SUPABASE_ANON_KEY", "")
+        cfg.supabase_service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+        return cfg
 
 
 config = Config.load()

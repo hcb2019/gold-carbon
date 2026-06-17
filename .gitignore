@@ -1,2 +1,12 @@
 .env
 node_modules/\n.next/\n.env\n.env.local
+
+# Python
+__pycache__/
+*.pyc
+
+# Supabase CLI temp
+supabase/.temp/
+
+# Carbon API local copy in frontend
+carbon-app/carbon-api/

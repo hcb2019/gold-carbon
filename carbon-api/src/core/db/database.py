@@ -1,35 +1,51 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+"""Supabase REST API client wrapper — replaces SQLAlchemy/asyncpg."""
+import uuid
+from datetime import datetime, date
+from typing import Optional
+from supabase import create_client, Client
 from src.core.config import config
 
-_engine = None
-_async_session = None
+_supabase: Optional[Client] = None
 
 
-def _get_engine():
-    global _engine
-    if _engine is None:
-        if not config.database_url:
-            raise RuntimeError("SUPABASE_DATABASE_URL not configured")
-        _engine = create_async_engine(config.database_url, echo=False)
-    return _engine
+def _get_client() -> Client:
+    global _supabase
+    if _supabase is None:
+        if not config.supabase_url or not config.supabase_service_role_key:
+            raise RuntimeError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY required")
+        _supabase = create_client(
+            config.supabase_url,
+            config.supabase_service_role_key,
+        )
+    return _supabase
 
 
-def _get_sessionmaker():
-    global _async_session
-    if _async_session is None:
-        _async_session = async_sessionmaker(_get_engine(), class_=AsyncSession, expire_on_commit=False)
-    return _async_session
+def get_db():
+    """Get the Supabase client. Replaces the async session dependency."""
+    return _get_client()
 
 
-async def get_db() -> AsyncSession:
-    async with _get_sessionmaker()() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
+def get_user_id(token: str) -> Optional[str]:
+    """Extract user_id from a Supabase JWT token."""
+    if not token:
+        return None
+    try:
+        user_client = create_client(config.supabase_url, token)
+        user = user_client.auth.get_user()
+        return user.user.id if user and user.user else None
+    except Exception:
+        return None
 
 
-async def init_db():
-    from src.core.db.models import Base
-    async with _get_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def _row_to_dict(row) -> dict:
+    if isinstance(row, dict):
+        return row
+    return dict(row) if row else {}
+
+
+def _serialize(val):
+    if isinstance(val, (datetime, date)):
+        return val.isoformat()
+    if isinstance(val, uuid.UUID):
+        return str(val)
+    return val
