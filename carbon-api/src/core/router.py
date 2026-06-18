@@ -218,13 +218,21 @@ async def list_vehicles(user_id: str = Depends(get_current_user)):
 
 @router.get("/vehicles/{vehicle_id}/status")
 async def vehicle_status(vehicle_id: str, user_id: str = Depends(get_current_user)):
-    """Real-time vehicle status from BYD Cloud (falls back to cache)."""
+    """Real-time vehicle status from BYD Cloud (falls back to cache or demo)."""
     db = get_db()
     v = db.table("vehicles").select("*").eq("id", vehicle_id).eq("user_id", user_id).execute()
     if not v.data:
         raise HTTPException(status_code=404, detail="Veículo não encontrado")
     vehicle = v.data[0]
     vin = vehicle.get("vin", "")
+
+    # Check for demo vehicle → use simulated data
+    if vehicle.get("source") == "demo":
+        return _demo_status(
+            vin=vin,
+            model=vehicle.get("model", "BYD"),
+            year=vehicle.get("year", 2025),
+        )
 
     # Try real-time from BYD Cloud
     try:
