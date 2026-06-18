@@ -3,6 +3,7 @@
 import json
 import uuid
 import logging
+import random
 from datetime import date, datetime, timedelta
 from fastapi import APIRouter, HTTPException, Header, Depends
 from src.core.db.database import get_db, get_user_id
@@ -509,3 +510,213 @@ async def user_profile(user_id: str = Depends(get_current_user)):
         "total_co2_kg": metrics["total_co2_kg"],
         "created_at": user.get("created_at", ""),
     }
+
+
+# ── Demo Mode ────────────────────────────────────────────────
+
+
+DEMO_BYD_MODELS = [
+    {"model": "BYD Dolphin GS", "year": 2025, "battery": 44.9},
+    {"model": "BYD Seal", "year": 2025, "battery": 82.5},
+    {"model": "BYD Dolphin Mini", "year": 2024, "battery": 30.1},
+]
+
+DEMO_VIN_PREFIXES = ["LCO", "LC0", "LGX", "98R", "MA7"]
+
+DEMO_CITIES = [
+    ("Rio de Janeiro", -22.9068, -43.1729),
+    ("São Paulo", -23.5505, -46.6333),
+    ("Belo Horizonte", -19.9167, -43.9345),
+    ("Brasília", -15.7801, -47.9292),
+    ("Curitiba", -25.4284, -49.2733),
+]
+
+
+def _demo_status(vin: str, model: str, year: int) -> dict:
+    """Generate realistic vehicle status data."""
+    soc = round(random.uniform(30, 95), 1)
+    range_km = round(soc * (44.9 if "Dolphin" in model else 82.5) / 100 * 6.5, 1)
+    odometer = round(random.uniform(1000, 25000), 0)
+    city = random.choice(DEMO_CITIES)
+    return {
+        "vin": vin,
+        "model": model,
+        "year": year,
+        "soc_pct": soc,
+        "range_km": range_km,
+        "odometer_km": odometer,
+        "is_charging": random.choice([True, False]),
+        "is_locked": random.choice([True, True, True, False]),  # usually locked
+        "latitude": city[1] + random.uniform(-0.05, 0.05),
+        "longitude": city[2] + random.uniform(-0.05, 0.05),
+        "last_sync": datetime.now().isoformat(),
+        "cached": False,
+    }
+
+
+def _demo_trips(days_back: int = 60) -> list[dict]:
+    """Generate realistic trip history."""
+    trips = []
+    trip_count = random.randint(20, 45)
+    for _ in range(trip_count):
+        days_ago = random.randint(0, days_back)
+        d = date.today() - timedelta(days=days_ago)
+        # Skip some days (weekends, days without driving)
+        if random.random() < 0.3:
+            continue
+        km = round(random.uniform(3, 85), 1)
+        kwh = round(km * random.uniform(0.13, 0.17), 2)
+        trips.append({
+            "date": d.isoformat(),
+            "distance_km": km,
+            "kwh_used": kwh,
+            "source": "demo",
+        })
+    return sorted(trips, key=lambda t: t["date"])
+
+
+@router.post("/demo/onboard")
+async def demo_onboard(body: dict, user_id: str = Depends(get_current_user)):
+    """Create realistic demo BYD data for testing the full app flow.
+
+    No real BYD credentials needed. Generates:
+    - 1-2 vehicles with realistic data
+    - 25-40 trips over 60 days
+    - Carbon credits calculated from real formulas
+    """
+    db = get_db()
+    calc = CarbonCalculator()
+
+    # Check if user already has demo data
+    existing = db.table("vehicles").select("id, source").eq("user_id", user_id).limit(1).execute()
+    if existing.data and existing.data[0].get("source") == "demo":
+        return {
+            "message": "Dados demo já existem. Acesse o dashboard.",
+            "vehicles": [existing.data[0]["id"]],
+            "trips_synced": 0,
+            "co2_kg": 0,
+            "credits_brl": 0,
+        }
+
+    num_vehicles = int(body.get("vehicles", 1))
+    num_vehicles = max(1, min(num_vehicles, 3))
+
+    # Save fake credentials so the app considers BYD "connected"
+    fake_creds = json.dumps({
+        "byd_email": "demo@goldcarbon.app",
+        "byd_password": "demo123",
+        "byd_control_pin": "000000",
+    })
+
+    # Upsert user record
+    user_exists = db.table("users").select("id").eq("id", user_id).execute()
+    if user_exists.data:
+        db.table("users").update({
+            "wallet_address": fake_creds,
+        }).eq("id", user_id).execute()
+    else:
+        # Create minimal user record for demo
+        db.table("users").insert({
+            "id": user_id,
+            "wallet_address": fake_creds,
+            "full_name": "Usuário Demo",
+        }).execute()
+
+    total_co2 = 0.0
+    total_trips = 0
+    vehicle_ids = []
+
+    for i in range(num_vehicles):
+        model_data = DEMO_BYD_MODELS[i % len(DEMO_BYD_MODELS)]
+        vin = f"{random.choice(DEMO_VIN_PREFIXES)}{random.randint(100000, 999999)}"
+        vid = str(uuid.uuid4())
+
+        db.table("vehicles").insert({
+            "id": vid,
+            "user_id": user_id,
+            "vin": vin,
+            "plate": f"BYD-{vin[-4:]}",
+            "model": model_data["model"],
+            "year": model_data["year"],
+            "battery_capacity_kwh": model_data["battery"],
+            "source": "demo",
+        }).execute()
+        vehicle_ids.append(vid)
+
+        # Generate trips
+        trips = _demo_trips(60)
+        for trip in trips:
+            co2 = calc.co2_from_kwh(trip["kwh_used"])
+            dup = db.table("trips").select("id") \
+                .eq("vehicle_id", vid).eq("trip_date", trip["date"]) \
+                .eq("distance_km", trip["distance_km"]).limit(1).execute()
+            if dup.data:
+                continue
+            db.table("trips").insert({
+                "id": str(uuid.uuid4()),
+                "user_id": user_id,
+                "vehicle_id": vid,
+                "distance_km": trip["distance_km"],
+                "consumption_kwh": trip["kwh_used"],
+                "co2_saved_kg": co2,
+                "trip_date": trip["date"],
+                "source": "demo",
+            }).execute()
+            total_co2 += co2
+            total_trips += 1
+
+    # Upsert carbon credits
+    all_trips = db.table("trips").select("*").eq("user_id", user_id).execute().data or []
+    metrics = calc.process_trips(all_trips)
+
+    existing_credits = db.table("carbon_credits").select("id").eq("user_id", user_id).limit(1).execute()
+    if existing_credits.data:
+        db.table("carbon_credits").update({
+            "co2_kg": metrics["total_co2_kg"],
+            "total_value_brl": metrics["total_credits_brl"],
+            "commission_brl": metrics["commission_brl"],
+            "net_value_brl": metrics["net_brl"],
+        }).eq("user_id", user_id).execute()
+    else:
+        db.table("carbon_credits").insert({
+            "id": str(uuid.uuid4()),
+            "user_id": user_id,
+            "co2_kg": metrics["total_co2_kg"],
+            "price_per_ton_brl": calc.price_per_ton,
+            "total_value_brl": metrics["total_credits_brl"],
+            "commission_brl": metrics["commission_brl"],
+            "net_value_brl": metrics["net_brl"],
+            "status": "verified",
+        }).execute()
+
+    return {
+        "message": f"Demo ativado! {num_vehicles} veículo(s), {total_trips} viagens",
+        "vehicles": vehicle_ids,
+        "trips_synced": total_trips,
+        "co2_kg": round(total_co2, 2),
+        "credits_brl": metrics["total_credits_brl"],
+    }
+
+
+@router.get("/demo/status/{vehicle_id}")
+async def demo_vehicle_status(vehicle_id: str, user_id: str = Depends(get_current_user)):
+    """Get realistic demo vehicle status (no BYD Cloud needed)."""
+    db = get_db()
+    v = db.table("vehicles").select("*").eq("id", vehicle_id).eq("user_id", user_id).execute()
+    if not v.data:
+        raise HTTPException(status_code=404, detail="Veículo não encontrado")
+    vehicle = v.data[0]
+    return _demo_status(
+        vin=vehicle.get("vin", ""),
+        model=vehicle.get("model", "BYD"),
+        year=vehicle.get("year", 2025),
+    )
+
+
+@router.post("/demo/reset")
+async def demo_reset(user_id: str = Depends(get_current_user)):
+    """Remove all demo data for the user."""
+    db = get_db()
+    for table in ["trips", "carbon_credits", "vehicles"]:
+        db.table(table).delete().eq("user_id", user_id).execute()
+    return {"message": "Dados demo removidos. Faça /api/demo/onboard para recriar."}

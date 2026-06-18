@@ -134,6 +134,19 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ command, temperature, duration_minutes }),
       }),
+
+    demoStatus: (id: string) =>
+      fetchAPI<VehicleStatus>(`/api/demo/status/${id}`),
+  },
+
+  demo: {
+    onboard: (vehicles = 1) =>
+      fetchAPI<OnboardResponse>("/api/demo/onboard", {
+        method: "POST",
+        body: JSON.stringify({ vehicles }),
+      }),
+    reset: () =>
+      fetchAPI<{ message: string }>("/api/demo/reset", { method: "POST" }),
   },
 
   credits: {

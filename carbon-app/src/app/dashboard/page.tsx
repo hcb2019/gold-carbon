@@ -102,6 +102,7 @@ export default function DashboardPage() {
           >
             Conectar agora
           </Link>
+          <DemoButton onActivated={() => window.location.reload()} />
         </div>
       ) : (
         <>
@@ -338,6 +339,37 @@ function CommandButton({
     >
       <div className="text-2xl mb-1">{loading ? "⏳" : msg || icon}</div>
       <p className="text-xs font-medium">{label}</p>
+    </button>
+  );
+}
+
+// ── Demo Button Component ──
+
+function DemoButton({ onActivated }: { onActivated: () => void }) {
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  const handle = async () => {
+    setLoading(true);
+    setMsg("");
+    try {
+      const result = await api.demo.onboard(1);
+      setMsg(`✓ ${result.trips_synced} viagens`);
+      setTimeout(onActivated, 800);
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "Erro");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handle}
+      disabled={loading}
+      className="w-full mt-3 border border-[var(--border)] text-[var(--muted)] font-medium py-3 rounded-lg hover:border-[var(--accent)] hover:text-[var(--accent)] transition-all text-sm disabled:opacity-50"
+    >
+      {loading ? "Criando dados demo..." : msg || "🧪 Testar com dados demo"}
     </button>
   );
 }
