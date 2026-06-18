@@ -18,6 +18,14 @@ export function formatKm(km: number): string {
   return `${km.toLocaleString("pt-BR", { maximumFractionDigits: 0 })} km`;
 }
 
+export function formatKM(km: number): string {
+  return formatKm(km);
+}
+
+export function formatSOC(pct: number): string {
+  return `${Math.round(pct)}%`;
+}
+
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("pt-BR", {
     day: "2-digit",

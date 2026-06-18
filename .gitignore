@@ -10,3 +10,4 @@ supabase/.temp/
 
 # Carbon API local copy in frontend
 carbon-app/carbon-api/
+.vercel

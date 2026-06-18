@@ -30,10 +30,12 @@ def get_user_id(token: str) -> Optional[str]:
     if not token:
         return None
     try:
-        user_client = create_client(config.supabase_url, token)
-        user = user_client.auth.get_user()
-        return user.user.id if user and user.user else None
-    except Exception:
+        # Use service_role_key to create client, then verify the user's access_token
+        admin_client = create_client(config.supabase_url, config.supabase_service_role_key)
+        user = admin_client.auth.get_user(token)
+        return str(user.user.id) if user and user.user else None
+    except Exception as e:
+        print(f"[AUTH] get_user_id failed: {e}")
         return None
 
 

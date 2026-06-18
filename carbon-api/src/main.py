@@ -31,8 +31,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
-        "https://*.vercel.app",
-        "https://*.trycloudflare.com",
+        "http://localhost:5173",
+        "https://goldcarbon.vercel.app",
+        "https://carbon-app-eight.vercel.app",
+        "https://carbon-app.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
