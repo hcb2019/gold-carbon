@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://default-terminology-pointing-adapter.trycloudflare.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://sorted-advised-standards-phentermine.trycloudflare.com";
 
 async function getToken(): Promise<string | null> {
   try {
