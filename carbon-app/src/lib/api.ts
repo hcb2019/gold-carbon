@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://keyboard-mesh-karaoke-yours.trycloudflare.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://classification-kim-allow-feeding.trycloudflare.com";
 
 async function getToken(): Promise<string | null> {
   try {
