@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://balance-chairman-opposed-subsidiary.trycloudflare.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://nevada-roommates-coal-explore.trycloudflare.com";
 
 async function getToken(): Promise<string | null> {
   try {
